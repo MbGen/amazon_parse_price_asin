@@ -37,7 +37,7 @@ class AmazonScraper:
             "Accept-Encoding": "gzip, deflate, br",
             "Accept-Language": "en-US,en;q=0.5",
             "Connection": "keep-alive",
-            "Cookie": "",
+            "Cookie": "session-id=133-9248822-6701907; session-id-time=2082787201l; i18n-prefs=USD; csm-hit=tb:s-PMNMT2R1CD6WW2BWQ8F2|1704286535472&t:1704286536953&adb:adblk_yes; ubid-main=132-7304988-2968536; sp-cdn=\"L5Z9:UA\"; session-token=zUdjYWc3DkpgGS8qZ1kSpdy2etyj7KLQenSFMd3DdyD0+7w55TiGat57KzsdfX3BEQ/6y6S031oV3Mkdq6Jg9Q9dF+hIp8OYHSLy6N0Cknuvdx5Cgt2oGx7tweMUgOaD0Y788CXABR0/GrJssg5AM8H6hTnrGDO1aEBQFa0MesnbrHOeBK4Evzh/N00HpslBe27vNv0BDQixrFh4q96pvAUymO5tySSoO4oph+ClHCN9BV/LZr/j+as7hCoOiEtljdD9wLiG6rjauys99uY2RV/D+en7QjSSXfr2fSB+0SKNLaB4xgld09w4EYRHQEaEQM6LZvNwDvPX5NKFb9rMf6h6Eu5ni2Sq; lc-main=en_US; skin=noskin",
             "Host": "www.amazon.com",
             "Sec-Fetch-Dest": "document",
             "Sec-Fetch-Mode": "navigate",
