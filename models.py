@@ -10,6 +10,7 @@ class BaseModel(peewee.Model):
 
 class Product(BaseModel):
     product_id = peewee.AutoField(unique=True, primary_key=True)
+    product_asin = peewee.CharField(max_length=10, unique=True)
     price = peewee.FloatField(null=True)
     currency = peewee.CharField(max_length=12, null=True)
     name = peewee.TextField(null=True)

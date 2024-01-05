@@ -22,6 +22,7 @@ class ErrorResponse(BaseModel):
 
 class ProductResponse(BaseModel):
     price: float | None = None
+    product_asin: str
     currency: str | None = None
     name: str | None = None
     description: str | None = None
@@ -58,17 +59,28 @@ class AmazonScraper:
                 return text[:ix]
         return None
 
-    def find_price_and_currency(self, soup) -> tuple[float, str]:
+    def find_price_and_currency(self, soup) -> tuple[float, str] | tuple[None, None]:
         parent_span = soup.find('span', class_='apexPriceToPay')
+
+        if parent_span is None:
+            parent_span = soup.find('span', class_='priceToPay')
+            if parent_span is None:
+                return None, None
+
         price_text = parent_span.find('span').text
 
         price_regex = re.compile(r'\d+\.\d+|\d+')
         price = re.findall(price_regex, price_text)[0]
+
         return float(price), self.find_currency(text=price_text)
 
     def save_product_information_to_db(self, model: peewee.Model, data: dict):
         product = model(**data)
-        product.save()
+        query = model.select().where(model.product_asin == data['product_asin'])
+        if query.exists():
+            model.update(**data)
+        else:
+            product.save()
 
     def parse(self, asin):
         product_url = self.generate_url_for_asin(asin)
@@ -79,21 +91,26 @@ class AmazonScraper:
 
             try:
                 price, currency = self.find_price_and_currency(soup)
-                product_price_response = ProductResponse(price=price, currency=currency).model_dump()
+                if price is not None and currency is not None:
 
-                self.save_product_information_to_db(model=Product, data=product_price_response)
+                    product_price_response = ProductResponse(price=price,
+                                                             currency=currency,
+                                                             product_asin=asin).model_dump()
 
-                return product_price_response
+                    self.save_product_information_to_db(model=Product, data=product_price_response)
 
+                    return product_price_response
+
+                return ErrorResponse(type='Error', text='Product is unavailable or has no price')
             except ValueError as exc:
                 logger.error(repr(exc.errors()))
                 return exc.errors()
             except peewee.IntegrityError as err:
                 logger.error(err)
 
-            return ErrorResponse(type='Server', text='Error with getting data')
+            return ErrorResponse(type='Error', text='Error with getting data')
         else:
-            return ErrorResponse(type='Server', text='Unknown error')
+            return ErrorResponse(type='Error', text='Unknown error')
 
 
 @app.get('/')
